@@ -16,7 +16,7 @@ revealed as bad has no effect on the outcome.
 
 ## Problem Simulation
 
-```Console
+```Output
 How many games would you like to play? 1000
 The probability of winning if you change your choice is 0.655
 The probability of winning if you keep your choice is 0.341
