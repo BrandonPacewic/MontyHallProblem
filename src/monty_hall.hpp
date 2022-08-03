@@ -13,84 +13,80 @@
 namespace monty_hall {
 namespace {
 
-constexpr uint8_t doors = 3;
+constexpr uint8_t door_count = 3;
 
-auto random_door =
-    std::bind(std::uniform_int_distribution<uint8_t>{0, doors - 1},
-              std::default_random_engine{});
-
-class MontyHall {
+class Random_door {
    public:
-    [[nodiscard]] const bool is_win() const;
+    Random_door(int low, int high) : distribution{low, high} {}
+    int operator()() { return distribution(engine); }
 
-   protected:
-    bool win;
+   private:
+    std::uniform_int_distribution<> distribution;
+    std::default_random_engine engine;
 };
 
-[[nodiscard]] std::array<bool, doors> get_doors() {
-    std::array<bool, doors> doors;
-    doors.fill(false);
-    srand(time(nullptr));
-    doors[std::rand() % doors.size()] = true;
+std::array<bool, door_count> get_doors() {
+    std::array<bool, door_count> doors;
+    std::fill(doors.begin(), doors.end(), false);
+
+    Random_door random_door(0, doors.size());
+    doors[random_door()] = true;
 
     return doors;
 }
 
-}  // namespace
+} // namespace
 
-class ChangeChoice : public MontyHall {
-   public:
-    ChangeChoice();
-};
-
-class KeepChoice : public MontyHall {
-   public:
-    KeepChoice();
-};
-
-[[nodiscard]] const bool MontyHall::is_win() const { return win; }
-
-ChangeChoice::ChangeChoice() {
+bool change_choice() {
     const auto doors = get_doors();
+
+    Random_door random_door(0, doors.size());
     const auto choice = random_door();
-    std::size_t revealed;
+    uint8_t revealed_door;
 
-    std::for_each(doors.begin(), doors.end(),
-                  [&](const auto& door, const auto& i) {
-                      if (i == choice || door) {
-                          return;
-                      }
+    // Reveal a losing door.
+    for (std::size_t i = 0; i < doors.size(); ++i) {
+        if (i == choice || doors[i]) {
+            continue;
+        }
 
-                      revealed = i;
-                  });
+        revealed_door = i;
+    }
+    
+    // Change choice.
+    bool win = false;
 
-    std::for_each(doors.begin(), doors.end(),
-                  [&](const auto& door, const auto& i) {
-                      if (i == revealed || i == choice) {
-                          return;
-                      }
+    for (std::size_t i = 0; i < doors.size(); ++i) {
+        if (i == choice || i == revealed_door) {
+            continue;
+        }
 
-                      win = door;
-                  });
+        win = doors[i];
+    }
+
+    return win;
 }
 
-KeepChoice::KeepChoice() {
+bool keep_choice() {
     const auto doors = get_doors();
+
+    Random_door random_door(0, doors.size());
     const auto choice = random_door();
-    std::size_t revealed;
+    uint8_t revealed_door;
 
-    // The solution to this problem becomes obvious when you realize that the
-    // following code block does nothing in influencing the outcome.
-    std::for_each(doors.begin(), doors.end(),
-                  [&](const auto& door, const auto& i) {
-                      if (i == choice || door) {
-                          return;
-                      }
+    // Reveal a losing door.
+    // The solution to this problem becomes clearer when you consider that
+    // this step never changes the outcome.
+    for (std::size_t i = 0; i < doors.size(); ++i) {
+        if (i == choice || doors[i]) {
+            continue;
+        }
 
-                      revealed = i;
-                  });
+        revealed_door = i;
+    }
 
-    win = doors[choice];
+    // Return our original choice.
+    return doors[choice];
 }
 
 }  // namespace monty_hall
