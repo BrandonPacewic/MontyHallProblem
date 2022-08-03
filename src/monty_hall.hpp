@@ -35,7 +35,7 @@ std::array<bool, door_count> get_doors() {
     return doors;
 }
 
-} // namespace
+}  // namespace
 
 bool change_choice() {
     const auto doors = get_doors();
@@ -52,7 +52,7 @@ bool change_choice() {
 
         revealed_door = i;
     }
-    
+
     // Change choice.
     bool win = false;
 
