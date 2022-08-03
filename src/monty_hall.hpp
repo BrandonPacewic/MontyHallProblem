@@ -25,11 +25,12 @@ class Random_door {
     std::default_random_engine engine;
 };
 
+Random_door random_door{0, door_count - 1};
+
 std::array<bool, door_count> get_doors() {
     std::array<bool, door_count> doors;
     std::fill(doors.begin(), doors.end(), false);
 
-    Random_door random_door(0, doors.size());
     doors[random_door()] = true;
 
     return doors;
@@ -39,8 +40,6 @@ std::array<bool, door_count> get_doors() {
 
 bool change_choice() {
     const auto doors = get_doors();
-
-    Random_door random_door(0, doors.size());
     const auto choice = random_door();
     uint8_t revealed_door;
 
@@ -69,8 +68,6 @@ bool change_choice() {
 
 bool keep_choice() {
     const auto doors = get_doors();
-
-    Random_door random_door(0, doors.size());
     const auto choice = random_door();
     uint8_t revealed_door;
 
