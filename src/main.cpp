@@ -13,8 +13,8 @@ int main() {
     std::uint64_t same_choice_wins = 0, change_choice_wins = 0;
 
     for (std::uint64_t i = 0; i < number_of_games; ++i) {
-        const auto keep_outcome = monty_hall::keep_choice();
-        const auto change_outcome = monty_hall::change_choice();
+        const bool keep_outcome = monty_hall::keep_choice();
+        const bool change_outcome = monty_hall::change_choice();
 
         if (keep_outcome) {
             ++same_choice_wins;
